@@ -100,17 +100,33 @@ func (b *Bridge) handleNewConnection(event *irc.Event) {
 
 func (b *Bridge) setupChannels() {
 	i := b.i
-	log.Info("Joining ", b.Config.IRC.Channel, " as ", b.ircNick)
-	i.Join(b.Config.IRC.Channel)
+    if b.Config.IRC.ChannelPassword != "" {
+        log.Println("Joining", b.Config.IRC.Channel, "as", b.ircNick, "with password", b.Config.IRC.ChannelPassword)
+        i.Join(b.Config.IRC.Channel + " " + b.Config.IRC.ChannelPassword)
+    } else {
+        log.Println("Joining", b.Config.IRC.Channel, "as", b.ircNick)
+        i.Join(b.Config.IRC.Channel)
+    }
+
 	if b.kind == "legacy" {
 		for _, val := range b.Config.Token {
-			log.Info("Joining ", val.IRCChannel, " as ", b.ircNick)
-			i.Join(val.IRCChannel)
+            if val.IRCChannelPassword != "" {
+    			log.Info("Joining ", val.IRCChannel, " as ", b.ircNick)
+    			i.Join(val.IRCChannel)
+            } else {
+                log.Println("Joining", val.IRCChannel, "as", b.ircNick, "with password", val.IRCChannelPassword)
+                i.Join(val.IRCChannel + " " + val.IRCChannelPassword)
+            }
 		}
 	} else {
 		for _, val := range b.Config.Channel {
-			log.Info("Joining ", val.IRC, " as ", b.ircNick)
-			i.Join(val.IRC)
+            if val.IRCPassword != "" {
+    			log.Info("Joining ", val.IRC, " as ", b.ircNick)
+    			i.Join(val.IRC)
+            } else {
+                log.Println("Joining", val.IRC, "as", b.ircNick, "with password", val.IRCPassword)
+                i.Join(val.IRC + " " + val.IRCPassword)
+            }
 		}
 	}
 	i.AddCallback("PRIVMSG", b.handlePrivMsg)
@@ -122,10 +138,11 @@ func (b *Bridge) setupChannels() {
 }
 
 func (b *Bridge) handlePrivMsg(event *irc.Event) {
-	msg := ""
-	if event.Code == "CTCP_ACTION" {
-		msg = event.Nick + " "
-	}
+    msg := ""
+    if event.Code == "CTCP_ACTION" {
+        msg = event.Nick + " "
+    }
+
 	msg += event.Message()
 	b.Send("irc-"+event.Nick, msg, b.getMMChannel(event.Arguments[0]))
 }
