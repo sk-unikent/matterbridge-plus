@@ -15,6 +15,7 @@ type Config struct {
 		Nick              string
 		Password          string
 		Channel           string
+		ChannelPassword   string
 		UseSlackCircumfix bool
 		NickServNick      string
 		NickServPassword  string
@@ -38,11 +39,13 @@ type Config struct {
 	}
 	Token map[string]*struct {
 		IRCChannel string
+		IRCChannelPassword string
 		MMChannel  string
 	}
 	Channel map[string]*struct {
-		IRC        string
-		Mattermost string
+		IRC         string
+		IRCPassword string
+		Mattermost  string
 	}
 	General struct {
 		GiphyAPIKey string
