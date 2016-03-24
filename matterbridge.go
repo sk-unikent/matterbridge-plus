@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/42wim/matterbridge-plus/bridge"
+	"./bridge"
 	log "github.com/Sirupsen/logrus"
 )
 
