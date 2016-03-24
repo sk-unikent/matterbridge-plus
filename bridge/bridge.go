@@ -114,7 +114,7 @@ func (b *Bridge) setupChannels() {
     			log.Info("Joining ", val.IRCChannel, " as ", b.ircNick)
     			i.Join(val.IRCChannel)
             } else {
-                log.Println("Joining", val.IRCChannel, "as", b.ircNick, "with password", val.IRCChannelPassword)
+                log.Info("Joining", val.IRCChannel, "as", b.ircNick, "with password", val.IRCChannelPassword)
                 i.Join(val.IRCChannel + " " + val.IRCChannelPassword)
             }
 		}
@@ -124,7 +124,7 @@ func (b *Bridge) setupChannels() {
     			log.Info("Joining ", val.IRC, " as ", b.ircNick)
     			i.Join(val.IRC)
             } else {
-                log.Println("Joining", val.IRC, "as", b.ircNick, "with password", val.IRCPassword)
+                log.Info("Joining", val.IRC, "as", b.ircNick, "with password", val.IRCPassword)
                 i.Join(val.IRC + " " + val.IRCPassword)
             }
 		}
@@ -134,6 +134,7 @@ func (b *Bridge) setupChannels() {
 	if b.Config.Mattermost.ShowJoinPart {
 		i.AddCallback("JOIN", b.handleJoinPart)
 		i.AddCallback("PART", b.handleJoinPart)
+		i.AddCallback("NICK", b.handleNickChange)
 	}
 }
 
@@ -145,6 +146,10 @@ func (b *Bridge) handlePrivMsg(event *irc.Event) {
 
 	msg += event.Message()
 	b.Send("irc-"+event.Nick, msg, b.getMMChannel(event.Arguments[0]))
+}
+
+func (b *Bridge) handleNickChange(event *irc.Event) {
+	b.Send(b.ircNick, "irc-"+event.Nick+" changed their nick to "+event.Message(), b.getMMChannel(event.Arguments[0]))
 }
 
 func (b *Bridge) handleJoinPart(event *irc.Event) {
