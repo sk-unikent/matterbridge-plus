@@ -111,21 +111,21 @@ func (b *Bridge) setupChannels() {
 	if b.kind == "legacy" {
 		for _, val := range b.Config.Token {
             if val.IRCChannelPassword != "" {
-    			log.Info("Joining ", val.IRCChannel, " as ", b.ircNick)
-    			i.Join(val.IRCChannel)
-            } else {
                 log.Info("Joining", val.IRCChannel, "as", b.ircNick, "with password", val.IRCChannelPassword)
                 i.Join(val.IRCChannel + " " + val.IRCChannelPassword)
+            } else {
+                log.Info("Joining ", val.IRCChannel, " as ", b.ircNick)
+                i.Join(val.IRCChannel)
             }
 		}
 	} else {
 		for _, val := range b.Config.Channel {
             if val.IRCPassword != "" {
-    			log.Info("Joining ", val.IRC, " as ", b.ircNick)
-    			i.Join(val.IRC)
-            } else {
                 log.Info("Joining", val.IRC, "as", b.ircNick, "with password", val.IRCPassword)
                 i.Join(val.IRC + " " + val.IRCPassword)
+            } else {
+                log.Info("Joining ", val.IRC, " as ", b.ircNick)
+                i.Join(val.IRC)
             }
 		}
 	}
